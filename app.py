@@ -1,5 +1,4 @@
 import streamlit as st
-import gdown
 import tensorflow as tf
 import io
 from PIL import Image
@@ -9,12 +8,9 @@ import pandas as pd
 
 @st.cache_resource
 def carrega_modelo():
-    url = 'https://drive.google.com/uc?export=download&id=1YV-XVuZM6lszstIRDs7gC2oUqQJdS-qX'
-    gdown.download(url, 'modelo_quantizado16bits.tflite', quiet=False)
-    
+    # Carrega o modelo diretamente do arquivo local
     interpreter = tf.lite.Interpreter(model_path='modelo_quantizado16bits.tflite')
     interpreter.allocate_tensors()
-
     return interpreter
 
 def carrega_imagem():
