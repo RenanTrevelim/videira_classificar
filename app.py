@@ -8,11 +8,10 @@ import plotly.express as px
 import pandas as pd
 
 @st.cache_resource
-
 def carrega_modelo():
-    url = 'https://drive.google.com/uc?id=1YV-XVuZM6lszstIRDs7gC2oUqQJdS-qX'
-
-    gdown.download(url, 'modelo_quantizado16bits.tflite')
+    url = 'https://drive.google.com/uc?export=download&id=1YV-XVuZM6lszstIRDs7gC2oUqQJdS-qX'
+    gdown.download(url, 'modelo_quantizado16bits.tflite', quiet=False)
+    
     interpreter = tf.lite.Interpreter(model_path='modelo_quantizado16bits.tflite')
     interpreter.allocate_tensors()
 
@@ -35,12 +34,10 @@ def carrega_imagem():
         return image
     
 def previsao(interpreter, image):
-
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
     interpreter.set_tensor(input_details[0]['index'], image)
-
     interpreter.invoke()
 
     output_data = interpreter.get_tensor(output_details[0]['index'])
@@ -48,9 +45,9 @@ def previsao(interpreter, image):
 
     df = pd.DataFrame()
     df['classes'] = classes
-    df['probabilidades (%)'] = 100*output_data[0]
+    df['probabilidades (%)'] = 100 * output_data[0]
     
-    fig = px.bar(df,y='classes',x='probabilidades (%)',  orientation='h', text='probabilidades (%)', title='Probabilidade de Classes de Doenças em Uvas')
+    fig = px.bar(df, y='classes', x='probabilidades (%)', orientation='h', text='probabilidades (%)', title='Probabilidade de Classes de Doenças em Uvas')
     st.plotly_chart(fig)
 
 def main():
@@ -58,15 +55,9 @@ def main():
         page_title='Classifica folhas de videira'
     )
     st.write('# Classifica Folhas de Videira!')
-    # carregar o modelo
-
+    
     interpreter = carrega_modelo()
-
-    # carrega imagem
-
     image = carrega_imagem()
-
-    # classifica
 
     if image is not None:
         previsao(interpreter, image)
